@@ -47,11 +47,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     setState(() => _isPlacing = true);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (!mounted) return;
     final cart = context.read<CartProvider>();
-    cart.placeOrder(
+    final auth = context.read<AuthProvider>();
+    await cart.placeOrder(
+      userId: auth.currentUser?.id ?? 'guest',
       address: _addressCtrl.text.trim(),
       paymentMethod: _selectedPayment,
       note: _noteCtrl.text,

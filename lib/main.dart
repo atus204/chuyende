@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_routes.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/food_provider.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/splash/onboarding_screen.dart';
 import 'screens/auth/login_screen.dart';
@@ -50,6 +51,7 @@ class NhaBepVietApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => FoodProvider()..loadData()),
       ],
       child: MaterialApp(
         title: 'Nhà Bếp Việt',

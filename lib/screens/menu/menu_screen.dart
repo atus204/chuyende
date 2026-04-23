@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/constants/app_strings.dart';
-import '../../data/mock_data.dart';
 import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/food_provider.dart';
 import '../../widgets/food_card.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -21,9 +21,10 @@ class _MenuScreenState extends State<MenuScreen> {
   String _sortBy = 'Mặc định';
 
   List<FoodItem> get _filteredFoods {
+    final foodProvider = context.read<FoodProvider>();
     List<FoodItem> foods = _searchQuery.isNotEmpty
-        ? MockData.search(_searchQuery)
-        : MockData.getByCategory(_selectedCategory);
+        ? foodProvider.search(_searchQuery)
+        : foodProvider.getByCategory(_selectedCategory);
 
     switch (_sortBy) {
       case 'Giá tăng dần':
@@ -51,6 +52,7 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     final foods = _filteredFoods;
+    final foodProvider = context.watch<FoodProvider>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -129,10 +131,10 @@ class _MenuScreenState extends State<MenuScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: MockData.categories.length,
+                itemCount: foodProvider.categories.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, i) {
-                  final cat = MockData.categories[i];
+                  final cat = foodProvider.categories[i];
                   final isSelected = cat == _selectedCategory;
                   return GestureDetector(
                     onTap: () => setState(() {
@@ -150,7 +152,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                       child: Row(
                         children: [
-                          Text(MockData.categoryEmojis[i], style: const TextStyle(fontSize: 14)),
+                          Text(foodProvider.categoryEmojis[i], style: const TextStyle(fontSize: 14)),
                           const SizedBox(width: 4),
                           Text(
                             cat,

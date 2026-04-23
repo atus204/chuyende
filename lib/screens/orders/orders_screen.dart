@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/order_model.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -19,6 +20,13 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabs = TabController(length: 2, vsync: this);
+    // Load orders từ Firestore
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userId = context.read<AuthProvider>().currentUser?.id;
+      if (userId != null) {
+        context.read<CartProvider>().loadOrders(userId);
+      }
+    });
   }
 
   @override
@@ -64,7 +72,9 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
           ],
         ),
       ),
-      body: TabBarView(
+      body: cart.isLoadingOrders
+          ? const Center(child: CircularProgressIndicator())
+          : TabBarView(
         controller: _tabs,
         children: [
           _buildList(activeOrders),
