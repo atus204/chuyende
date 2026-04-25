@@ -46,12 +46,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCplkvLQCYQ4wkFnl9xiqHmPoB2mxDn6SM',
-    appId: '1:659956454412:web:499fd7c5430b7a2e780a29',
+    appId: '1:659956454412:web:fa74e076b300b053780a29',
     messagingSenderId: '659956454412',
     projectId: 'appdoanngoll',
     authDomain: 'appdoanngoll.firebaseapp.com',
     storageBucket: 'appdoanngoll.firebasestorage.app',
     databaseURL: 'https://appdoanngoll-default-rtdb.asia-southeast1.firebasedatabase.app',
+    measurementId: 'G-NV7Z9WXGB7',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

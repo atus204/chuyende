@@ -72,6 +72,30 @@ class FoodProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Thêm một món mới vào Firestore và cập nhật danh sách local
+  Future<void> addFood(FoodItem food) async {
+    await _db.collection('food_items').doc(food.id).set(food.toJson());
+    _allFoods = [..._allFoods, food];
+    notifyListeners();
+  }
+
+  /// Xoá món ăn khỏi Firestore và danh sách local
+  Future<void> deleteFood(String foodId) async {
+    await _db.collection('food_items').doc(foodId).delete();
+    _allFoods = _allFoods.where((f) => f.id != foodId).toList();
+    notifyListeners();
+  }
+
+  /// Cập nhật món ăn trên Firestore và danh sách local
+  Future<void> updateFood(FoodItem food) async {
+    await _db.collection('food_items').doc(food.id).update(food.toJson());
+    final idx = _allFoods.indexWhere((f) => f.id == food.id);
+    if (idx >= 0) {
+      _allFoods = [..._allFoods]..[idx] = food;
+      notifyListeners();
+    }
+  }
+
   /// Upload mock data lên Firestore (chỉ dùng 1 lần)
   Future<void> seedFirestore() async {
     final batch = _db.batch();
