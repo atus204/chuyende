@@ -6,9 +6,11 @@ import '../../data/mock_data.dart';
 import '../../models/food_item.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/food_provider.dart';
 import '../../models/order_model.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/admin_upload_button.dart';
+import '../../widgets/create_food.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -184,44 +186,49 @@ class _AdminScreenState extends State<AdminScreen> {
 class _FoodManagementTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final foods = context.watch<FoodProvider>().allFoods;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Column(
+          child: Row(
             children: [
-              // Firebase Upload Button
-              const AdminUploadButton(),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Text('${MockData.foodItems.length} món', style: const TextStyle(color: AppColors.textGrey, fontSize: 13)),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(10)),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.add, color: Colors.white, size: 16),
-                          SizedBox(width: 4),
-                          Text('Thêm món', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    ),
+              Text('${foods.length} món', style: const TextStyle(color: AppColors.textGrey, fontSize: 13)),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => showCreateFoodSheet(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(10)),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.add, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text('Thêm món', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
         ),
         Expanded(
-          child: ListView.builder(
+          child: foods.isEmpty
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('🍽', style: TextStyle(fontSize: 48)),
+                      SizedBox(height: 12),
+                      Text('Chưa có món nào', style: TextStyle(color: AppColors.textGrey, fontSize: 15)),
+                    ],
+                  ),
+                )
+              : ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: MockData.foodItems.length,
+            itemCount: foods.length,
             itemBuilder: (_, i) {
-              final food = MockData.foodItems[i];
+              final food = foods[i];
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(12),
@@ -250,7 +257,11 @@ class _FoodManagementTab extends StatelessWidget {
                     ),
                     PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert, color: AppColors.textGrey),
-                      onSelected: (v) {},
+                      onSelected: (v) {
+                        if (v == 'delete') {
+                          context.read<FoodProvider>().deleteFood(food.id);
+                        }
+                      },
                       itemBuilder: (_) => [
                         const PopupMenuItem(value: 'edit', child: Text('Chỉnh sửa')),
                         const PopupMenuItem(value: 'toggle', child: Text('Ẩn/Hiện')),
